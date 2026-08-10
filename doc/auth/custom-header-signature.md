@@ -9,7 +9,7 @@ Documentation for accessing and setting credentials for Authorization.
 
 | Name | Type | Description | Getter |
 |  --- | --- | --- | --- |
-| Authorization | `str` | Auth Header. Provide your Auth key in the format `X-Auth-Key {auth-key}`. | `authorization` |
+| Authorization | `str` | Auth Header. Replace {x-auth-key} with your Auth Key. | `authorization` |
 
 
 
@@ -22,6 +22,9 @@ Documentation for accessing and setting credentials for Authorization.
 You must provide credentials in the client as shown in the following code snippet.
 
 ```python
+from apimaticapi.apimaticapi_client import ApimaticapiClient
+from apimaticapi.http.auth.custom_header_authentication import CustomHeaderAuthenticationCredentials
+
 client = ApimaticapiClient(
     custom_header_authentication_credentials=CustomHeaderAuthenticationCredentials(
         authorization='Authorization'

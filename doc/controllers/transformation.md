@@ -10,52 +10,76 @@ transformation_controller = client.transformation
 
 ## Methods
 
-* [Transform Via File](../../doc/controllers/transformation.md#transform-via-file)
-* [Transform Via URL](../../doc/controllers/transformation.md#transform-via-url)
+* [Transform via File](../../doc/controllers/transformation.md#transform-via-file)
+* [Transform via URL](../../doc/controllers/transformation.md#transform-via-url)
 * [Download Transformed File](../../doc/controllers/transformation.md#download-transformed-file)
-* [Download Input File Transformation](../../doc/controllers/transformation.md#download-input-file-transformation)
+* [Download Input File](../../doc/controllers/transformation.md#download-input-file)
 * [List All Transformations](../../doc/controllers/transformation.md#list-all-transformations)
 * [Get a Transformation](../../doc/controllers/transformation.md#get-a-transformation)
 * [Delete Transformation](../../doc/controllers/transformation.md#delete-transformation)
 
 
-# Transform Via File
+# Transform via File
 
-Transform an API into any of the supported API specification formats by uploading the API specification file. This endpoint transforms and then uploads the transformed API specification to APIMatic's cloud storage. An ID for the transformation performed is returned as part of the response.
+Transform an API into any of the supported API specification formats by uploading the API specification file.
+
+This endpoint transforms and then uploads the transformed API specification to APIMatic's cloud storage. An ID for the transformation performed is returned as part of the response.
 
 ```python
 def transform_via_file(self,
+                      content_type,
                       file,
-                      export_format)
+                      export_format,
+                      _optional_query_parameters=None)
 ```
+
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
 
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
+| `content_type` | [`ContentType`](../../doc/models/content-type.md) | Header, Required | - |
 | `file` | `typing.BinaryIO` | Form, Required | The API specification file.<br>The type of the specification file should be any of the [supported formats](https://docs.apimatic.io/api-transformer/overview-transformer#supported-input-formats). |
 | `export_format` | [`ExportFormats`](../../doc/models/export-formats.md) | Form, Required | The structure contains API specification formats that Transformer can convert to. |
+| `_optional_query_parameters` | `array` | Optional | Pass additional query parameters. |
 
 ## Response Type
 
-[`Transformation`](../../doc/models/transformation.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`Transformation`](../../doc/models/transformation.md).
 
 ## Example Usage
 
 ```python
+content_type = ContentType.ENUM_MULTIPARTFORMDATA
+
 file = FileWrapper(Path('dummy_file').open('rb'), 'optional-content-type')
 
 export_format = ExportFormats.WSDL
 
+_optional_query_parameters = {
+    'key0': 'additionalQueryParams2'
+}
+
 result = transformation_controller.transform_via_file(
+    content_type,
     file,
-    export_format
+    export_format,
+    _optional_query_parameters=_optional_query_parameters
 )
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
-# Transform Via URL
+# Transform via URL
 
 Transform an API into any of the supported API specification formats by providing the URL of the API specification file.
 
@@ -66,6 +90,10 @@ def transform_via_url(self,
                      body)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -74,7 +102,9 @@ def transform_via_url(self,
 
 ## Response Type
 
-[`Transformation`](../../doc/models/transformation.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`Transformation`](../../doc/models/transformation.md).
 
 ## Example Usage
 
@@ -85,7 +115,11 @@ body = TransformViaUrlRequest(
 )
 
 result = transformation_controller.transform_via_url(body)
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
@@ -98,15 +132,21 @@ def download_transformed_file(self,
                              transformation_id)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
-| `transformation_id` | `str` | Template, Required | The ID of transformation received in the response of the [Transform Via File ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-file) or [Transform Via URL  ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-url) calls. |
+| `transformation_id` | `str` | Template, Required | The ID of transformation received in the response of the [Transform Via File ](../../doc/controllers/transformation.md#transform-via-file) or [Transform Via URL  ](../../doc/controllers/transformation.md#transform-via-url) calls. |
 
 ## Response Type
 
-`binary`
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type `binary`.
 
 ## Example Usage
 
@@ -114,36 +154,50 @@ def download_transformed_file(self,
 transformation_id = 'transformation_id6'
 
 result = transformation_controller.download_transformed_file(transformation_id)
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
-# Download Input File Transformation
+# Download Input File
 
 Download the API Specification file used as input for a particular Transformation performed via the Transformation endpoints.
 
 ```python
-def download_input_file_transformation(self,
-                                      transformation_id)
+def download_input_file(self,
+                       transformation_id)
 ```
+
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
 
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
-| `transformation_id` | `str` | Template, Required | The ID of the transformation to download the API specification for. The transformation ID is received in the response of the [Transform Via File ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-file) or [Transform Via URL](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-url) calls. |
+| `transformation_id` | `str` | Template, Required | The ID of the transformation to download the API specification for. The transformation ID is received in the response of the [Transform Via File ](../../doc/controllers/transformation.md#transform-via-file) or [Transform Via URL](../../doc/controllers/transformation.md#transform-via-url) calls. |
 
 ## Response Type
 
-`binary`
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type `binary`.
 
 ## Example Usage
 
 ```python
 transformation_id = 'transformation_id6'
 
-result = transformation_controller.download_input_file_transformation(transformation_id)
-print(result)
+result = transformation_controller.download_input_file(transformation_id)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
@@ -155,15 +209,25 @@ Get a list of all API transformations performed.
 def list_all_transformations(self)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Response Type
 
-[`List[Transformation]`](../../doc/models/transformation.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`List[Transformation]`](../../doc/models/transformation.md).
 
 ## Example Usage
 
 ```python
 result = transformation_controller.list_all_transformations()
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
@@ -176,15 +240,21 @@ def get_a_transformation(self,
                         transformation_id)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
-| `transformation_id` | `str` | Template, Required | The ID of the transformation to fetch. The transformation ID is received in the response of the [Transform Via File ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-file) or [Transform Via URL  ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-url) calls. |
+| `transformation_id` | `str` | Template, Required | The ID of the transformation to fetch. The transformation ID is received in the response of the [Transform Via File ](../../doc/controllers/transformation.md#transform-via-file) or [Transform Via URL  ](../../doc/controllers/transformation.md#transform-via-url) calls. |
 
 ## Response Type
 
-[`Transformation`](../../doc/models/transformation.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`Transformation`](../../doc/models/transformation.md).
 
 ## Example Usage
 
@@ -192,7 +262,11 @@ def get_a_transformation(self,
 transformation_id = 'transformation_id6'
 
 result = transformation_controller.get_a_transformation(transformation_id)
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 
@@ -205,15 +279,21 @@ def delete_transformation(self,
                          transformation_id)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
-| `transformation_id` | `str` | Template, Required | The ID of the transformation to delete. The transformation ID is received in the response of the [Transform Via File ](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-file) or [Transform Via URL](https://www.apimatic.io/api-docs-preview/dashboard/60eea3b7a73395c3052d961b/v/3_0#/http/api-endpoints/transformation/transform-via-url) calls. |
+| `transformation_id` | `str` | Template, Required | The ID of the transformation to delete. The transformation ID is received in the response of the [Transform Via File ](../../doc/controllers/transformation.md#transform-via-file) or [Transform Via URL](../../doc/controllers/transformation.md#transform-via-url) calls. |
 
 ## Response Type
 
-`void`
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance.
 
 ## Example Usage
 
@@ -221,6 +301,10 @@ def delete_transformation(self,
 transformation_id = 'transformation_id6'
 
 result = transformation_controller.delete_transformation(transformation_id)
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 

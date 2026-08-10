@@ -28,7 +28,9 @@ The structure contains API specification formats that Transformer can convert to
 
 ## Example
 
-```
-APIMATIC
+```python
+from apimaticapi.models.export_formats import ExportFormats
+
+export_formats = ExportFormats.WSDL
 ```
 

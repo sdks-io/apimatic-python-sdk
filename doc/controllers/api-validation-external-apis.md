@@ -6,15 +6,15 @@ api_validation_external_apis_controller = client.api_validation_external_apis
 
 ## Class Name
 
-`APIValidationExternalApisController`
+`ApiValidationExternalApisController`
 
 ## Methods
 
-* [Validate API Via File](../../doc/controllers/api-validation-external-apis.md#validate-api-via-file)
-* [Validate API Via URL](../../doc/controllers/api-validation-external-apis.md#validate-api-via-url)
+* [Validate API via File](../../doc/controllers/api-validation-external-apis.md#validate-api-via-file)
+* [Validate API via URL](../../doc/controllers/api-validation-external-apis.md#validate-api-via-url)
 
 
-# Validate API Via File
+# Validate API via File
 
 Validate an API by uploading the API specification file.
 
@@ -22,26 +22,43 @@ You can also specify [API Metadata](https://docs.apimatic.io/manage-apis/apimati
 
 ```python
 def validate_api_via_file(self,
+                         content_type,
                          file)
 ```
+
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
 
 ## Parameters
 
 | Parameter | Type | Tags | Description |
 |  --- | --- | --- | --- |
+| `content_type` | [`ContentType`](../../doc/models/content-type.md) | Header, Required | - |
 | `file` | `typing.BinaryIO` | Form, Required | The API specification file.<br>The type of the specification file should be any of the [supported formats](https://docs.apimatic.io/api-transformer/overview-transformer#supported-input-formats). |
 
 ## Response Type
 
-[`ApiValidationSummary`](../../doc/models/api-validation-summary.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`ApiValidationSummary`](../../doc/models/api-validation-summary.md).
 
 ## Example Usage
 
 ```python
+content_type = ContentType.ENUM_MULTIPARTFORMDATA
+
 file = FileWrapper(Path('dummy_file').open('rb'), 'optional-content-type')
 
-result = api_validation_external_apis_controller.validate_api_via_file(file)
-print(result)
+result = api_validation_external_apis_controller.validate_api_via_file(
+    content_type,
+    file
+)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 ## Example Response *(as JSON)*
@@ -91,13 +108,13 @@ print(result)
 
 | HTTP Status Code | Error Description | Exception Class |
 |  --- | --- | --- |
-| 400 | Bad Request | `APIException` |
-| 401 | Unauthenticated | `APIException` |
-| 403 | Forbidden | `APIException` |
-| 500 | Internal Server Error | `APIException` |
+| 400 | Bad Request | `ApiException` |
+| 401 | Unauthenticated | `ApiException` |
+| 403 | Forbidden | `ApiException` |
+| 500 | Internal Server Error | `ApiException` |
 
 
-# Validate API Via URL
+# Validate API via URL
 
 Validate an API by providing the URL of the API specification file.
 
@@ -108,6 +125,10 @@ def validate_api_via_url(self,
                         description_url)
 ```
 
+## Authentication
+
+This endpoint requires [Authorization](../../doc/auth/custom-header-signature.md)
+
 ## Parameters
 
 | Parameter | Type | Tags | Description |
@@ -116,7 +137,9 @@ def validate_api_via_url(self,
 
 ## Response Type
 
-[`ApiValidationSummary`](../../doc/models/api-validation-summary.md)
+**200**
+
+This method returns an [`ApiResponse`](../../doc/api-response.md) instance. The `body` property of this instance returns the response data which is of type [`ApiValidationSummary`](../../doc/models/api-validation-summary.md).
 
 ## Example Usage
 
@@ -124,7 +147,11 @@ def validate_api_via_url(self,
 description_url = 'https://petstore.swagger.io/v2/swagger.json'
 
 result = api_validation_external_apis_controller.validate_api_via_url(description_url)
-print(result)
+
+if result.is_success():
+    print(result.body)
+elif result.is_error():
+    print(result.errors)
 ```
 
 ## Example Response *(as JSON)*
@@ -174,8 +201,8 @@ print(result)
 
 | HTTP Status Code | Error Description | Exception Class |
 |  --- | --- | --- |
-| 400 | Bad Request | `APIException` |
-| 401 | Unauthenticated | `APIException` |
-| 403 | Forbidden | `APIException` |
-| 500 | Internal Server Error | `APIException` |
+| 400 | Bad Request | `ApiException` |
+| 401 | Unauthenticated | `ApiException` |
+| 403 | Forbidden | `ApiException` |
+| 500 | Internal Server Error | `ApiException` |
 

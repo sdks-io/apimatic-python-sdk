@@ -21,7 +21,9 @@ The structure contains platforms that APIMatic CodeGen can generate SDKs and Doc
 
 ## Example
 
-```
-CS_NET_STANDARD_LIB
+```python
+from apimaticapi.models.platforms import Platforms
+
+platforms = Platforms.JAVA_ECLIPSE_JRE_LIB
 ```
 
